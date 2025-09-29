@@ -1,5 +1,6 @@
 import os
 import duckdb
+import logging
 
 def clean_parquet():
     con = None # what does this mean. 
