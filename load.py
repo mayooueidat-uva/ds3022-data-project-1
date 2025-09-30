@@ -36,7 +36,7 @@ def load_parquet_files():
         logger.info("created pre-populated vehicle emissions table")
 
         # create empty YELLOW CAB table
-        con.execute("""CREATE TABLE yellow_trip_data4(
+        con.execute("""CREATE TABLE yellow_trip_data(
             tpep_pickup_datetime TIMESTAMP,
             tpep_dropoff_datetime TIMESTAMP,
             passenger_count INTEGER,
@@ -46,7 +46,7 @@ def load_parquet_files():
         logger.info("created yellow cab table")
 
         # create empty GREEN CAB table 
-        con.execute("""CREATE TABLE green_trip_data4(
+        con.execute("""CREATE TABLE green_trip_data(
             lpep_pickup_datetime TIMESTAMP,
             lpep_dropoff_datetime TIMESTAMP,
             passenger_count INTEGER,
