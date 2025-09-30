@@ -29,6 +29,12 @@ def load_parquet_files():
         con = duckdb.connect(database='emissions.duckdb', read_only=False)
         logger.info("Connected to DuckDB instance")
 
+        # create vehicle emissions table, already populated
+        con.execute("""CREATE TABLE vehicle_emissions AS
+            SELECT * FROM read_csv("https://raw.githubusercontent.com/mayooueidat-uva/ds3022-data-project-1/refs/heads/main/data/vehicle_emissions.csv");
+        """)
+        logger.info("created pre-populated vehicle emissions table")
+
         # create empty YELLOW CAB table
         con.execute("""CREATE TABLE yellow_trip_data4(
             tpep_pickup_datetime TIMESTAMP,
@@ -49,7 +55,7 @@ def load_parquet_files():
         """)
         logger.info("created green cab table")
 
-        # pulling parquet files to populate tables 
+        # pulling parquet files to populate cab tables 
         for year in years:
             for month in months:
                 # populating YELLOW CAB table
