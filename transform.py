@@ -79,7 +79,7 @@ def transform_parquet():
             ADD COLUMN hour_of_day INTEGER;
         
             UPDATE yellow_tripdata_01
-            SET hour_of_day = EXTRACT(HOUR FROM tpep_pickup_datetime));
+            SET hour_of_day = EXTRACT(HOUR FROM tpep_pickup_datetime);
         """)
         logger.info("created column for hour of day for YELLOW cab trips")
 
@@ -89,7 +89,7 @@ def transform_parquet():
             ADD COLUMN hour_of_day INTEGER;
         
             UPDATE green_tripdata_01
-            SET hour_of_day = EXTRACT(HOUR FROM lpep_pickup_datetime));
+            SET hour_of_day = EXTRACT(HOUR FROM lpep_pickup_datetime);
         """)
         logger.info("created column for hour of day for GREEN cab trips")
         
