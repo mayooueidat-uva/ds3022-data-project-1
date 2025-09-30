@@ -2,11 +2,44 @@ import duckdb
 import os
 import logging 
 
+# configuring the logging mechanism
+logging.basicConfig(
+    filename='clean.log',
+    filemode="a",
+    style="{", 
+    datefmt="%Y-%m-%d-%H:%M:%x", 
+    level="INFO"
+)
+logger = logging.getLogger(__name__)
+
+# defining function to transform our data 
 def transform_parquet():
     con = None
     try:
     # connecting to database 
         con = duckdb.connect(database='TEST.duckdb', read_only=False)
+        logger.info("Connected to DuckDB instance")
+
+    # calculating vehicle emissions per trip - YELLOW cabs 
+        con.execute(f"""
+            ALTER TABLE yellow_tripdata_01 ADD COLUMN trip_co2_kgs DOUBLE;
+        
+            UPDATE yellow_tripdata_01
+            SET trip_co2_kgs = trip_distance * (
+        SELECT co2_grams_per_mile FROM vehicle_emissions WHERE vehicle_type = 'yellow_taxi');
+        """)
+        logger.info("created column for co2 trip emissions for YELLOW cabs") 
+
+    # calculating vehicle emissions per trip - GREEN cabs 
+        con.execute(f"""
+            ALTER TABLE green_tripdata_01 ADD COLUMN trip_co2_kgs DOUBLE;
+        
+            UPDATE yellow_tripdata_01
+            SET trip_co2_kgs = trip_distance * (
+        SELECT co2_grams_per_mile FROM vehicle_emissions WHERE vehicle_type = 'green_taxi');
+        """)
+        logger.info("created column for co2 trip emissions for GREEN cabs") 
+
     # calculating mph - YELLOW cabs 
         con.execute(f"""
             ALTER TABLE yellow_tripdata_01
@@ -21,6 +54,8 @@ def transform_parquet():
             UPDATE yellow_tripdata_01
             SET avg_mph = trip_distance / hours_diff;
         """)
+        logger.info("made column for average MPH for each YELLOW cab trip")
+
     # calculating mph - GREEN cabs 
         con.execute(f"""
             ALTER TABLE green_tripdata_01
@@ -35,6 +70,9 @@ def transform_parquet():
             UPDATE green_tripdata_01
             SET avg_mph = trip_distance / hours_diff;
         """)
+        logger.info("made column for average MPH for each GREEN cab trip")
+
+        
     # creating column for hour of day of pickups - YELLOW cabs
         con.execute(f"""
             ALTER TABLE yellow_tripdata_01
@@ -43,6 +81,8 @@ def transform_parquet():
             UPDATE yellow_tripdata_01
             SET hour_of_day = EXTRACT(HOUR FROM tpep_pickup_datetime));
         """)
+        logger.info("created column for hour of day for YELLOW cab trips")
+
     # creating column for hour of day of pickups - GREEN cabs
         con.execute(f"""
             ALTER TABLE green_tripdata_01
@@ -51,6 +91,8 @@ def transform_parquet():
             UPDATE green_tripdata_01
             SET hour_of_day = EXTRACT(HOUR FROM lpep_pickup_datetime));
         """)
+        logger.info("created column for hour of day for GREEN cab trips")
+        
     # creating column for day of week of pickups - YELLOW cabs
         con.execute(f"""
             ALTER TABLE yellow_tripdata_01
@@ -59,6 +101,8 @@ def transform_parquet():
             UPDATE yellow_tripdata_01
             SET day_of_week = dayname(tpep_pickup_datetime);
         """)
+        logger.info("created column for day of week for YELLOW cab trips")
+        
     # creating column for day of week of pickups - GREEN cabs
         con.execute(f"""
             ALTER TABLE green_tripdata_01
@@ -67,6 +111,8 @@ def transform_parquet():
             UPDATE green_tripdata_01
             SET day_of_week = dayname(lpep_pickup_datetime);
         """)
+        logger.info("created column for day of week for GREEN cab trips")
+        
     # creating column for week of year of pickups - YELLOW cabs
         con.execute(f"""
             ALTER TABLE yellow_tripdata_01
@@ -75,6 +121,8 @@ def transform_parquet():
             UPDATE yellow_tripdata_01
             SET week_of_year = EXTRACT(WEEK FROM tpep_pickup_datetime);
         """)
+        logger.info("created column for week of year for YELLOW cab trips")
+        
     # creating column for week of year of pickups - GREEN cabs
         con.execute(f"""
             ALTER TABLE green_tripdata_01
@@ -83,6 +131,8 @@ def transform_parquet():
             UPDATE green_tripdata_01
             SET week_of_year = EXTRACT(WEEK FROM lpep_pickup_datetime);
         """)
+        logger.info("created column for week of year for GREEN cab trips")
+
     # creating column for month of year of pickups - YELLOW cabs
         con.execute(f"""
             ALTER TABLE yellow_tripdata_01
@@ -91,6 +141,8 @@ def transform_parquet():
             UPDATE yellow_tripdata_01
             SET month_of_year = monthname(tpep_pickup_datetime);
         """)
+        logger.info("created column for month of year for YELLOW cab trips")
+        
     # creating column for month of year of pickups - GREEN cabs
         con.execute(f"""
             ALTER TABLE green_tripdata_01
@@ -99,10 +151,9 @@ def transform_parquet():
             UPDATE green_tripdata_01
             SET month_of_year = monthname(lpep_pickup_datetime);
         """)
-    # vehicle emissions (come back to this) 
-        con.execute(f"""
-            SELECT y.trip_distance, co2.co2_grams_per_mile
-            FROM yellow_trip_data y;""")
+        logger.info("created column for month of year for GREEN cab trips")
+
+    # error handling
     except Exception as e:
         print(f"An error occurred: {e}")
 
