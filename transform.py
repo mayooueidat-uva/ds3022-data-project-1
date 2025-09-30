@@ -4,7 +4,7 @@ import logging
 
 # configuring the logging mechanism
 logging.basicConfig(
-    filename='clean.log',
+    filename='transform.log',
     filemode="a",
     style="{", 
     datefmt="%Y-%m-%d-%H:%M:%x", 
