@@ -4,8 +4,11 @@ import logging
 
 # configuring the logging mechanism
 logging.basicConfig(
-    level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s',
-    filename='load.log'
+    filename='clean.log',
+    filemode="a",
+    style="{", 
+    datefmt="%Y-%m-%d-%H:%M:%x", 
+    level="INFO"
 )
 logger = logging.getLogger(__name__)
 
